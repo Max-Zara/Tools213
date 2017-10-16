@@ -175,13 +175,15 @@ replacePunctuation <- function(x) {
 MAE <- function(actual, predicted) {mean(abs(actual - predicted))}
 
 
-normalize <- function(x) {
-  return((x-min(x))/(max(x)-min(x)))
+
+
+normalize <- function(x, optional.rescale = 0) { #optional rescale is how much you want to widen the range on each side
+  return((x-min(x)+optional.rescale*(max(x)-min(x)))/((max(x)-min(x))*(1+optional.rescale*2)))
 }
 
 #x is the data source, Y is the original data series used for normalizing
-renormalize <- function (x, y){
-   return (x*(max(y)-min(y)) + min(y))
+renormalize <- function (x, y, optional.rescale = 0){ #optional rescale is how much you want to widen the range on each side
+   return (x*(max(y)-min(y))*(1+optional.rescale*2) + min(y)-(optional.rescale*(max(y)-min(y))))
 }
 
 #ANALYSIS
