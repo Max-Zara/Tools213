@@ -7,6 +7,36 @@ library(ggplot2)
 
 #replaces punctuation and adds a space " ", this way "hello...Max" becomes "hello Max", and not "helloMax"
 
+summ <- function(x, plot1 = T, h = 2){
+  # The h is how many head/tail you want to see
+  if(class(x) == "factor") stop( "class factor not supported, use standard summary function")
+  class.x = class(x)
+  if(plot1){
+    par(mfrow = c(2,1))
+    plot(x, ty = "b", lwd = 1.5, main = "Plot")
+    hist(x, breaks = length(x)/4) # Nice detailed breaks
+  }
+  a1 = suppressWarnings(data.frame(min = min(x, na.rm = T), med = median(x, na.rm = T), mean = mean(x,na.rm = T),
+                                   max = max(x, na.rm = T), sd = stats::sd(x, na.rm = T), skew = skewness(x, na.rm = T),kurt = kurtosis(x,na.rm = T))    )
+  headh = head(x,h)  ; tailh = tail(x,h)
+  a2 =  which(is.na(x))
+  if( length(a2) == 0)  a2 = c("No NA's in the series")
+  l = list(summary.stat = a1, na.at = a2, head.x = headh, tail.x = tailh, length.x = length(x),
+           class.x = class.x)
+  # now we format the output:
+  cat("Summary Statistics:","\n")
+  print(l$summary.stat)
+  cat("------","\n")
+  cat("NA's?:","\n")
+  cat(l$na.at,"\n")
+  cat("------","\n")
+  cat("Head                   Tail","\n")
+  cat(l$head.x,"          ",l$tail.x,"\n")
+  cat("------","\n")
+  cat("Length","         ","Class","\n")
+  cat(l$length.x,"          ",l$class.x,"\n")
+}
+
 myscree <- function(eigs,x=0.8,y=0.1,just=c("right","bottom")){
   vp <- viewport(x=x,y=y,width = 0.2, height=0.2,just=just)
   sp <- qplot(factor(1:length(eigs)),eigs,geom="bar",stat="identity") + labs(x=NULL,y=NULL)
